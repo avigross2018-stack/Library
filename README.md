@@ -2,13 +2,7 @@
 
 ## System Description
 
-System manager for libraryIn the system:
-
-- Managing the books.
-- Managing the Library members.
-- The system store data in tables in MySql.
-- The connection to the DataBases is done by FastAPI.
-- The system allows amount of actions, like full CRUD, and more.
+System manager for library the system handle books information and members information.
 
 ## MySql & Docker instructions.
 
@@ -59,20 +53,20 @@ docker exec -it library-sql mysql -uroot -proot
 
 ### books
 
-- id= PK auto_increment.
-- title= book title max 50 chars must value.
-- author= author name max 50 chars must value.
+- id= INT PK auto_increment.
+- title= VARCHAR(50)book title max 50 chars must value.
+- author= VARCHAR(50) author name max 50 chars must value.
 - genre= must values(Fiction | Non-Fiction | Science | History | Other).
 - is_available= boolean if the book available.
-- borrowed_by_member_id= hold the member id who borrow the book.
+- borrowed_by_member_id= INT hold the member id who borrow the book.
 
 ### members
 
-- id= PK auto_increment.
-- name= member name max 50 chars must value.
-- email= unique mail adders max 50 chars must value.
+- id= INT PK auto_increment.
+- name= VARCHAR(50) member name max 50 chars must value.
+- email= VARCHAR(50) unique mail adders max 50 chars must value.
 - is_active= boolean if the member active (if not the member cannot borrow book).
-- total_borrows= sum the amount of borrows.
+- total_borrows= INT sum the amount of borrows.
 
 ## System rules
 
@@ -147,11 +141,23 @@ Member can return book only if he borrowed it.
 
 ## System Flow
 
+In the system:
+
+- Managing the books.
+- Managing the Library members.
+- The system store data in tables in MySql.
+- The connection to the DataBases is done by FastAPI.
+- The system allows amount of actions, like full CRUD, and more.
+
 ## Run instruction
+
+1. Run the docker command (see [MySql &amp; Docker instructions](#mysql--docker-instructions))
+
+2. pip install requirements.txt
 
 ### Option 1
 
-Run main.py file,  
+Run main.py file,
 In the CLI press on the URL or copy it and pase it in the browser.
 
 ### Option 2
