@@ -12,10 +12,16 @@ System manager for libraryIn the system:
 
 ## MySql & Docker instructions.
 
-### Connection to MySql
+### Create MySql Container
 
 ```bash
 docker run --name library-sql -e MYSQL_ROOT_PASSWORD=root -d -p 3310:3306 mysql:latest
+```
+
+### Check if created
+
+```bash
+docker exec -it library-sql mysql -uroot -proot
 ```
 
 ### Connection Info
