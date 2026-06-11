@@ -1,4 +1,4 @@
-from db_connection import get_connection, create_tables
+from database.db_connection import get_connection, create_tables
 from pydantic import BaseModel
 
 
@@ -8,6 +8,10 @@ class NewBook(BaseModel):
     genre:str
     is_available:bool
     borrowed_by_member_id:int | None
+
+
+# class UpdateBook(BaseModel):
+
 
 
 class BookDB:
@@ -64,7 +68,7 @@ class BookDB:
     def get_book_by_id(book_id: int) -> dict:
         '''
         search in the db book by ID.
-        return the book in dict
+        return the book in dict.
         '''
         try:
             con = get_connection()
@@ -79,3 +83,4 @@ class BookDB:
             cur.close()
             con.close()
         return data
+    

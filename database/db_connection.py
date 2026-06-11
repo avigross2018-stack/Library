@@ -21,7 +21,7 @@ def create_tables():
                 author                  VARCHAR(50) NOT NULL,
                 genre                   ENUM('Fiction', 'Non-Fiction', 'Science', 'History', 'Other'),
                 is_available            BOOLEAN,
-                borrowed_by_member_id   INT 
+                borrowed_by_member_id   INT DEFAULT NULL
                 )
             ''')
     
@@ -31,7 +31,7 @@ def create_tables():
                 name            VARCHAR(50) NOT NULL,
                 email           VARCHAR(50) NOT NULL,
                 is_active       BOOLEAN,
-                total)borrows   INT 
+                total_borrows   INT 
                 )
             ''')
     con.commit()
