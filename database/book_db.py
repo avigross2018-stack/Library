@@ -41,6 +41,10 @@ class BookDB:
     
 
     def create_book(data: NewBook):
+        '''
+        arg data: get NewBook basemodel.
+        return bool if data created.
+        '''
         try:
             conn = get_connection()
             cursor = conn.cursor()
@@ -55,3 +59,23 @@ class BookDB:
             cursor.close()
             conn.close()
         return change > 0
+    
+
+    def get_book_by_id(book_id: int) -> dict:
+        '''
+        search in the db book by ID.
+        return the book in dict
+        '''
+        try:
+            con = get_connection()
+            cur = con.cursor(dictionary=True)
+            cur.execute("""
+                    SELECT * FROM books WHERE id = %s
+                    """, (book_id,))
+            data = cur.fetchone()
+        except Exception as e:
+            raise e
+        finally:
+            cur.close()
+            con.close()
+        return data
