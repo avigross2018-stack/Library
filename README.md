@@ -9,7 +9,7 @@ System manager for library the system handle books information and members infor
 ### Create MySql Container
 
 ```bash
-docker run --name library-sql -e MYSQL_ROOT_PASSWORD=root -d -p 3310:3306 mysql:latest
+docker run --name library-sql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=library_db -d -p 3310:3306 mysql:latest
 ```
 
 ### Check if created
@@ -152,7 +152,6 @@ In the system:
 ## Run instruction
 
 1. Run the docker command (see [MySql &amp; Docker instructions](#mysql--docker-instructions))
-
 2. pip install requirements.txt
 
 ### Option 1
