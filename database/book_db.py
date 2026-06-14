@@ -6,8 +6,7 @@ class NewBook(BaseModel):
     title:str
     author:str
     genre:str
-    is_available:bool
-    borrowed_by_member_id:int | None = None
+
 
 
 class UpdateBook(BaseModel):
@@ -58,9 +57,9 @@ class BookDB:
             conn = get_connection()
             cursor = conn.cursor()
             cursor.execute("""
-                    INSERT INTO books (title, author, genre, is_available, borrowed_by_member_id)
-                        VALUES (%s, %s, %s, %s, %s)
-                    """, (data.title, data.author, data.genre, data.is_available, data.borrowed_by_member_id))
+                    INSERT INTO books (title, author, genre)
+                        VALUES (%s, %s, %s)
+                    """, (data.title, data.author, data.genre))
             conn.commit()
             change = cursor.rowcount
         except Exception as e:

@@ -23,7 +23,7 @@ def create_tables():
                 title                   VARCHAR(50) NOT NULL,
                 author                  VARCHAR(50) NOT NULL,
                 genre                   ENUM('Fiction', 'Non-Fiction', 'Science', 'History', 'Other'),
-                is_available            BOOLEAN,
+                is_available            BOOLEAN DEFAULT TRUE NOT NULL,
                 borrowed_by_member_id   INT DEFAULT NULL
                 )
             ''')
@@ -32,9 +32,9 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS members (
                 id              INT PRIMARY KEY AUTO_INCREMENT,
                 name            VARCHAR(50) NOT NULL,
-                email           VARCHAR(50) NOT NULL,
-                is_active       BOOLEAN,
-                total_borrows   INT 
+                email           VARCHAR(50) UNIQUE NOT NULL,
+                is_active       BOOLEAN NOT NULL,
+                total_borrows   INT NOT NULL
                 )
             ''')
     con.commit()
