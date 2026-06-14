@@ -96,20 +96,39 @@ class BookDB:
             raise Exception
         con = get_connection()
         cur = con.cursor()
-
-        keys = [f"{k} = %s" for k in data]
-        values = list(data.values())
-        values.append(book_id)
-        data_clause = ", ".join(keys)
-        
-        cur.execute(f"UPDATE books SET {data_clause} WHERE id = %s ", tuple(values))
-        con.commit()
-
-        cur.close()
-        con.close()
+        try:
+            keys = [f"{k} = %s" for k in data]
+            values = list(data.values())
+            values.append(book_id)
+            data_clause = ", ".join(keys)
+            
+            cur.execute(f"UPDATE books SET {data_clause} WHERE id = %s ", tuple(values))
+            count = cur.rowcount
+            con.commit()
+        except Exception as e:
+            raise e    
+        finally:
+            cur.close()
+            con.close()
+        return count > 0
 
 
     def set_available(self, book_id: int, val: bool, member_id: int):
         update_data = {"is_available": val,
                   "borrowed_by_member_id": member_id}
         self.update_book_info(book_id, update_data)
+
+    
+    def count_total_books(self):
+        con = get_connection()
+        cur = con.cursor(dictionary=True)
+        try:
+            cur.execute('''SELECT *, COUNT(*) FROM books''')
+            data = cur.fetchall()
+            
+        except Exception as e:
+            raise e
+        finally:
+            cur.close()
+            con.close()
+        return data
