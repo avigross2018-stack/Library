@@ -123,7 +123,69 @@ class BookDB:
         con = get_connection()
         cur = con.cursor(dictionary=True)
         try:
-            cur.execute('''SELECT *, COUNT(*) FROM books''')
+            cur.execute('''SELECT COUNT(*) AS total_books FROM books''')
+            data = cur.fetchall()
+            
+        except Exception as e:
+            raise e
+        finally:
+            cur.close()
+            con.close()
+        return data
+    
+
+    def count_available_books(self):
+        con = get_connection()
+        cur = con.cursor(dictionary=True)
+        try:
+            cur.execute('''SELECT COUNT(*) AS available_books FROM books WHERE is_available = TRUE''')
+            data = cur.fetchall()
+            
+        except Exception as e:
+            raise e
+        finally:
+            cur.close()
+            con.close()
+        return data
+    
+
+    def count_borrowed_books(self):
+        con = get_connection()
+        cur = con.cursor(dictionary=True)
+        try:
+            cur.execute('''SELECT COUNT(*) AS borrowed_books FROM books WHERE is_available = FALSE''')
+            data = cur.fetchall()
+            
+        except Exception as e:
+            raise e
+        finally:
+            cur.close()
+            con.close()
+        return data
+    
+
+    def count_by_genre(self, genre):
+        con = get_connection()
+        cur = con.cursor(dictionary=True)
+        try:
+            cur.execute('''SELECT COUNT(*) AS amount FROM books WHERE genre = %s''',
+                        (genre,))
+            data = cur.fetchall()
+            
+        except Exception as e:
+            raise e
+        finally:
+            cur.close()
+            con.close()
+        return data
+    
+
+    def count_active_borrows_by_member(member_id):
+        con = get_connection()
+        cur = con.cursor(dictionary=True)
+        try:
+            cur.execute('''SELECT COUNT(*) AS member FROM books WHERE borrowed_by_member_id = %s AND is_available = FALSE''',
+                        (member_id,))
             data = cur.fetchall()
             
         except Exception as e:
