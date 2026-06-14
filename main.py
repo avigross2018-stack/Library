@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException, status
 import uvicorn
-from routers import book_routes, report_routes
+from routers import book_routes, report_routes, member_routes
 
 
 app = FastAPI()
 
 app.include_router(book_routes.router)
 app.include_router(report_routes.router)
+app.include_router(member_routes.router)
 
 
 

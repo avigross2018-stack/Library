@@ -1,7 +1,7 @@
-from database.db_connection import get_connection, create_tables
+from database.db_connection import DBConnection
 from pydantic import BaseModel
 
-
+db_conn = DBConnection()
 
 class NewMember(BaseModel):
     name:str
@@ -23,7 +23,7 @@ class MemberDB:
 
     def  get_all_members(self):
         try:
-            conn = get_connection()
+            conn = db_conn.get_connection()
             cursor = conn.cursor(dictionary=True)
             cursor.execute('SELECT * FROM members')
             data = cursor.fetchall()
@@ -40,7 +40,7 @@ class MemberDB:
 
     def create_member(self, new_member: NewMember):
         try:
-            conn = get_connection()
+            conn = db_conn.get_connection()
             cursor = conn.cursor()
             cursor.execute("""
                     INSERT INTO members (name, email, is_active, total_borrows)
@@ -58,7 +58,7 @@ class MemberDB:
 
     def get_member_by_id(self, member_id: int):
         try:
-            con = get_connection()
+            con = db_conn.get_connection()
             cur = con.cursor(dictionary=True)
             cur.execute("""
                     SELECT * FROM members WHERE id = %s
@@ -75,7 +75,7 @@ class MemberDB:
     def update_member(self, member_id: int, data: dict):
         if not data:
             raise Exception
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor()
         try:
             keys = [f"{k} = %s" for k in data]
@@ -95,10 +95,10 @@ class MemberDB:
 
 
     def deactivate_member(self, member_id: int):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor()
         try:
-            cur.execute('''UPDATE members SET (is_active) VALUES (FALSE) WHERE id = %s''',
+            cur.execute('''UPDATE members SET is_active = FALSE WHERE id = %s''',
                         (member_id,))
             con.commit()
             change = cur.rowcount
@@ -111,10 +111,10 @@ class MemberDB:
 
 
     def  activate_member(self, member_id: int):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor()
         try:
-            cur.execute('''UPDATE members SET (is_active) VALUES (TRUE) WHERE id = %s''',
+            cur.execute('''UPDATE members SET is_active = TRUE WHERE id = %s''',
                         (member_id,))
             con.commit()
             change = cur.rowcount
@@ -132,7 +132,7 @@ class MemberDB:
 
 
     def count_active_members(self):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS active_members FROM members WHERE is_active = TRUE''',
@@ -148,7 +148,7 @@ class MemberDB:
 
 
     def get_top_member(self):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT * from members

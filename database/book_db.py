@@ -1,8 +1,10 @@
-from database.db_connection import get_connection, create_tables
+from database.db_connection import DBConnection
 from pydantic import BaseModel
 from fastapi import HTTPException, status
 from typing import Literal
 
+
+db_conn = DBConnection()
 
 class NewBook(BaseModel):
     title:str
@@ -23,7 +25,7 @@ class UpdateBook(BaseModel):
 class BookDB:
 
     GENRE = ('Fiction', 'Non-Fiction', 'Science', 'History', 'Other')
-    create_tables()
+    db_conn.create_tables()
 
     def __init__(self):
         pass
@@ -35,7 +37,7 @@ class BookDB:
         return all the data in type dict.
         """
         try:
-            conn = get_connection()
+            conn = db_conn.get_connection()
             cursor = conn.cursor(dictionary=True)
             cursor.execute('SELECT * FROM books')
             data = cursor.fetchall()
@@ -56,7 +58,7 @@ class BookDB:
         return bool if data created.
         '''
         try:
-            conn = get_connection()
+            conn = db_conn.get_connection()
             cursor = conn.cursor()
             cursor.execute("""
                     INSERT INTO books (title, author, genre)
@@ -78,7 +80,7 @@ class BookDB:
         return the book in dict.
         '''
         try:
-            con = get_connection()
+            con = db_conn.get_connection()
             cur = con.cursor(dictionary=True)
             cur.execute("""
                     SELECT * FROM books WHERE id = %s
@@ -95,7 +97,7 @@ class BookDB:
     def update_book_info(self, book_id: int, data: dict):
         if not data:
             raise Exception
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor()
         try:
             keys = [f"{k} = %s" for k in data]
@@ -121,7 +123,7 @@ class BookDB:
 
     
     def count_total_books(self):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS total_books FROM books''')
@@ -136,7 +138,7 @@ class BookDB:
     
 
     def count_available_books(self):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS available_books FROM books WHERE is_available = TRUE''')
@@ -151,7 +153,7 @@ class BookDB:
     
 
     def count_borrowed_books(self):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS borrowed_books FROM books WHERE is_available = FALSE''')
@@ -166,7 +168,7 @@ class BookDB:
     
 
     def count_by_genre(self, genre):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS amount FROM books WHERE genre = %s''',
@@ -182,7 +184,7 @@ class BookDB:
     
 
     def count_active_borrows_by_member(self, member_id):
-        con = get_connection()
+        con = db_conn.get_connection()
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS member FROM books WHERE borrowed_by_member_id = %s AND is_available = FALSE''',
