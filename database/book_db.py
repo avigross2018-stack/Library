@@ -7,10 +7,15 @@ class NewBook(BaseModel):
     author:str
     genre:str
     is_available:bool
-    borrowed_by_member_id:int | None
+    borrowed_by_member_id:int | None = None
 
 
-# class UpdateBook(BaseModel):
+class UpdateBook(BaseModel):
+    title:str | None = None
+    author:str | None = None
+    genre:str | None = None
+    is_available:bool | None = None
+    borrowed_by_member_id:int | None = None
 
 
 
@@ -44,7 +49,7 @@ class BookDB:
         return data
     
 
-    def create_book(data: NewBook):
+    def create_book(self, data: NewBook):
         '''
         arg data: get NewBook basemodel.
         return bool if data created.
@@ -56,6 +61,7 @@ class BookDB:
                     INSERT INTO books (title, author, genre, is_available, borrowed_by_member_id)
                         VALUES (%s, %s, %s, %s, %s)
                     """, (data.title, data.author, data.genre, data.is_available, data.borrowed_by_member_id))
+            conn.commit()
             change = cursor.rowcount
         except Exception as e:
             raise e
@@ -65,7 +71,7 @@ class BookDB:
         return change > 0
     
 
-    def get_book_by_id(book_id: int) -> dict:
+    def get_book_by_id(self, book_id: int) -> dict:
         '''
         search in the db book by ID.
         return the book in dict.
@@ -84,3 +90,26 @@ class BookDB:
             con.close()
         return data
     
+
+    def update_book_info(self, book_id: int, data: dict):
+        if not data:
+            raise Exception
+        con = get_connection()
+        cur = con.cursor()
+
+        keys = [f"{k} = %s" for k in data]
+        values = list(data.values())
+        values.append(book_id)
+        data_clause = ", ".join(keys)
+        
+        cur.execute(f"UPDATE books SET {data_clause} WHERE id = %s ", tuple(values))
+        con.commit()
+
+        cur.close()
+        con.close()
+
+
+    def set_available(self, book_id: int, val: bool, member_id: int):
+        update_data = {"is_available": val,
+                  "borrowed_by_member_id": member_id}
+        self.update_book_info(book_id, update_data)

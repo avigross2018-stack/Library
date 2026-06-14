@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from database.book_db import BookDB, NewBook
+from database.book_db import BookDB, NewBook, UpdateBook
 
 
 router = APIRouter()
@@ -16,26 +16,61 @@ def get_all_books():
             detail=str(e))
     
 
-@router.post("/books")
+@router.post("/books", 
+             status_code=status.HTTP_201_CREATED)
 def new_book(new_book: NewBook):
-    pass
+    try:
+        book.create_book(new_book)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )    
 
 
-@router.get("/books/{id}")
-def get_book_by_id(id: int):
-    pass
+@router.get("/books/{book_id}")
+def get_book_by_id(book_id: int):
+    try:
+        book.get_book_by_id(book_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )    
 
 
-@router.put("/books/{id}")
-def update_book_info(id: int, data):
-    pass
+@router.put("/books/{book_id}")
+def update_book_info(book_id: int, data: UpdateBook):
+    update_book = data.model_dump(exclude_unset=True)
+    if not update_book:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Empty information")
+    try:
+        book.update_book_info(book_id, update_book)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail=str(e))
 
 
-@router.put("/books/{id}/borrow/{member_id}")
-def member_borrow_book(id: int, member_id: int):
-    pass
+
+@router.put("/books/{book_id}/borrow/{member_id}")
+def member_borrow_book(book_id: int, member_id: int):
+    try:
+        book.set_available(book_id,False, member_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=str(e))
+    
 
 
-@router.put("/books/{id}/return/{member_id}")
-def member_return_book(id: int, member_id: int):
-    pass
+@router.put("/books/{book_id}/return/{member_id}")
+def member_return_book(book_id: int, member_id: int):
+    try:
+        book.set_available(book_id,True, member_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=str(e))
+    
