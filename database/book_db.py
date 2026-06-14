@@ -1,11 +1,13 @@
 from database.db_connection import get_connection, create_tables
 from pydantic import BaseModel
+from fastapi import HTTPException, status
+from typing import Literal
 
 
 class NewBook(BaseModel):
     title:str
     author:str
-    genre:str
+    genre:Literal['Fiction', 'Non-Fiction', 'Science', 'History', 'Other']
 
 
 
@@ -123,7 +125,7 @@ class BookDB:
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS total_books FROM books''')
-            data = cur.fetchall()
+            data = cur.fetchone()
             
         except Exception as e:
             raise e
@@ -138,7 +140,7 @@ class BookDB:
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS available_books FROM books WHERE is_available = TRUE''')
-            data = cur.fetchall()
+            data = cur.fetchone()
             
         except Exception as e:
             raise e
@@ -153,7 +155,7 @@ class BookDB:
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS borrowed_books FROM books WHERE is_available = FALSE''')
-            data = cur.fetchall()
+            data = cur.fetchone()
             
         except Exception as e:
             raise e
@@ -169,7 +171,7 @@ class BookDB:
         try:
             cur.execute('''SELECT COUNT(*) AS amount FROM books WHERE genre = %s''',
                         (genre,))
-            data = cur.fetchall()
+            data = cur.fetchone()
             
         except Exception as e:
             raise e
@@ -179,13 +181,13 @@ class BookDB:
         return data
     
 
-    def count_active_borrows_by_member(member_id):
+    def count_active_borrows_by_member(self, member_id):
         con = get_connection()
         cur = con.cursor(dictionary=True)
         try:
             cur.execute('''SELECT COUNT(*) AS member FROM books WHERE borrowed_by_member_id = %s AND is_available = FALSE''',
                         (member_id,))
-            data = cur.fetchall()
+            data = cur.fetchone()
             
         except Exception as e:
             raise e

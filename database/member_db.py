@@ -95,20 +95,71 @@ class MemberDB:
 
 
     def deactivate_member(self, member_id: int):
-        pass
+        con = get_connection()
+        cur = con.cursor()
+        try:
+            cur.execute('''UPDATE members SET (is_active) VALUES (FALSE) WHERE id = %s''',
+                        (member_id,))
+            con.commit()
+            change = cur.rowcount
+        except Exception as e:
+            raise e    
+        finally:
+            cur.close()
+            con.close()
+        return change > 0
 
 
     def  activate_member(self, member_id: int):
-        pass
+        con = get_connection()
+        cur = con.cursor()
+        try:
+            cur.execute('''UPDATE members SET (is_active) VALUES (TRUE) WHERE id = %s''',
+                        (member_id,))
+            con.commit()
+            change = cur.rowcount
+        except Exception as e:
+            raise e    
+        finally:
+            cur.close()
+            con.close()
+        return change > 0
 
 
     def increment_borrows(self, member_id: int):
-        pass
+        c_member = self.get_member_by_id(member_id)["total_borrows"] + 1
+        self.update_member(member_id, {"total_borrows": c_member})
 
 
     def count_active_members(self):
-        pass
+        con = get_connection()
+        cur = con.cursor(dictionary=True)
+        try:
+            cur.execute('''SELECT COUNT(*) AS active_members FROM members WHERE is_active = TRUE''',
+                        )
+            data = cur.fetchone()
+            
+        except Exception as e:
+            raise e
+        finally:
+            cur.close()
+            con.close()
+        return data
 
 
     def get_top_member(self):
-        pass
+        con = get_connection()
+        cur = con.cursor(dictionary=True)
+        try:
+            cur.execute('''SELECT * from members
+                        ORDER BY total_borrows DESC
+                        LIMIT 1'''
+                        )
+            data = cur.fetchone()
+            
+        except Exception as e:
+            raise e
+        finally:
+            cur.close()
+            con.close()
+        return data
