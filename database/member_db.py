@@ -6,8 +6,8 @@ db_conn = DBConnection()
 class NewMember(BaseModel):
     name:str
     email:str
-    is_active:bool
-    total_borrows:int
+    is_active:bool = True
+    total_borrows:int = 0
 
 
 class UpdateMember(BaseModel):
